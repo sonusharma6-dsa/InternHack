@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware, optionalAuthMiddleware } from "../../middleware/auth.middleware.js";
-import { aiRoadmapLimiter } from "../../middleware/rate-limit.middleware.js";
+import { aiRoadmapLimiter, roadmapGetLimiter } from "../../middleware/rate-limit.middleware.js";
 import { cacheMiddleware } from "../../middleware/cache.middleware.js";
 import {
   downloadCertificate,
@@ -47,9 +47,9 @@ roadmapRouter.post(
   postRecomputePace,
 );
 
-roadmapRouter.get("/", optionalAuthMiddleware, getRoadmaps);
+roadmapRouter.get("/", optionalAuthMiddleware, roadmapGetLimiter, getRoadmaps);
 roadmapRouter.get("/:slug/enrollment", authMiddleware, getMyEnrollmentByRoadmapSlug);
-roadmapRouter.get("/:slug", optionalAuthMiddleware, cacheMiddleware(600, "roadmap"), getRoadmap);
+roadmapRouter.get("/:slug", optionalAuthMiddleware, roadmapGetLimiter, cacheMiddleware(600, "roadmap"), getRoadmap);
 roadmapRouter.get("/:slug/topics/:topicSlug", optionalAuthMiddleware, getTopic);
 roadmapRouter.post("/:slug/enroll", authMiddleware, enroll);
 roadmapRouter.post("/:slug/sections/:sectionId/regenerate", authMiddleware, aiRoadmapLimiter, postRegenerateSection);

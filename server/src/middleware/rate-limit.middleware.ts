@@ -22,6 +22,20 @@ export const aiRoadmapLimiter = rateLimit({
   },
 });
 
+export const roadmapGetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: createRateLimitStore("roadmap-get"),
+  keyGenerator: (req) => {
+    return req.ip || "unknown_ip";
+  },
+  message: {
+    message: "Too many requests to roadmaps. Please try again later."
+  },
+});
+
 export const contactLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
